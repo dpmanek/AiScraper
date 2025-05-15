@@ -311,6 +311,65 @@ input[type='file'] {
 	box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.25);
 }
 
+/* Advanced Options */
+.advanced-options-toggle {
+	margin: 1rem 0;
+	text-align: left;
+}
+
+.toggle-button {
+	background-color: transparent;
+	color: var(--primary-color);
+	border: none;
+	padding: 0.5rem 0;
+	font-size: 0.9rem;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	font-weight: 500;
+}
+
+.toggle-button:hover {
+	color: var(--primary-hover);
+	text-decoration: underline;
+}
+
+.toggle-button:focus {
+	outline: none;
+}
+
+.advanced-options {
+	background-color: #f8f9fa;
+	border-radius: var(--border-radius);
+	padding: 1rem;
+	margin-bottom: 1rem;
+	border: 1px solid #e1e4e8;
+}
+
+.option-group {
+	margin-bottom: 0.75rem;
+}
+
+.checkbox-label {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	font-size: 0.95rem;
+}
+
+.checkbox-label input[type='checkbox'] {
+	margin-right: 0.75rem;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
+.option-info {
+	margin-top: 0.5rem;
+	color: var(--secondary-color);
+	font-style: italic;
+}
+
 /* Submit Button */
 .submit-button {
 	padding: 0.75rem 1.5rem;
