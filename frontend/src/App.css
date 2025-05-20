@@ -545,6 +545,59 @@ footer {
 	color: var(--secondary-color);
 }
 
+/* Tickets Promo Section */
+.tickets-promo-section {
+	background-color: white;
+	border-radius: var(--border-radius);
+	box-shadow: var(--box-shadow);
+	padding: 2rem;
+	margin-top: 2rem;
+	text-align: center;
+}
+
+.tickets-promo-section h2 {
+	color: var(--primary-color);
+	margin-bottom: 1rem;
+}
+
+.tickets-promo-section p {
+	color: var(--secondary-color);
+	margin-bottom: 1.5rem;
+	max-width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.promo-buttons {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.promo-button {
+	padding: 0.75rem 1.5rem;
+	background-color: #e9ecef;
+	color: var(--dark-bg);
+	border: none;
+	border-radius: var(--border-radius);
+	text-decoration: none;
+	font-weight: 500;
+	transition: var(--transition);
+}
+
+.promo-button:hover {
+	background-color: #dee2e6;
+}
+
+.promo-button.primary {
+	background-color: var(--primary-color);
+	color: white;
+}
+
+.promo-button.primary:hover {
+	background-color: var(--primary-hover);
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
 	.app-container {
@@ -565,5 +618,10 @@ footer {
 	.tabs {
 		flex-direction: column;
 		gap: 0.5rem;
+	}
+
+	.promo-buttons {
+		flex-direction: column;
+		gap: 0.75rem;
 	}
 }

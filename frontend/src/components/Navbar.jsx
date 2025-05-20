@@ -15,8 +15,13 @@ const Navbar = () => {
 						</Link>
 					</li>
 					<li className="nav-item">
-						<Link to="/form-feeder" className="nav-link">
-							Form Feeder
+						<Link to="/art" className="nav-link">
+							ART
+						</Link>
+					</li>
+					<li className="nav-item">
+						<Link to="/tickets" className="nav-link">
+							Tickets
 						</Link>
 					</li>
 				</ul>

@@ -108,6 +108,23 @@ const Home = () => {
 					<ResultDisplay data={processedData} onReanalyze={handleReanalyze} />
 				</section>
 			)}
+
+			<section className="tickets-promo-section">
+				<h2>Need to Track Your Scraping Tasks?</h2>
+				<p>
+					Use our ticketing system to create, manage, and track your content
+					scraping tasks. Create tickets for websites you need to analyze and
+					keep track of your progress.
+				</p>
+				<div className="promo-buttons">
+					<a href="/tickets" className="promo-button">
+						View All Tickets
+					</a>
+					<a href="/tickets/new" className="promo-button primary">
+						Create New Ticket
+					</a>
+				</div>
+			</section>
 		</div>
 	);
 };
