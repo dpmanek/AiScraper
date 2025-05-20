@@ -380,6 +380,32 @@ app.post('/api/analyze-text', async (req, res) => {
 	}
 });
 
+// Mock API endpoint for form data
+app.get('/api/form-data', (req, res) => {
+	// Mock data that would normally come from a database
+	const formData = {
+		firstName: 'John',
+		lastName: 'Doe',
+		email: 'john.doe@example.com',
+		phone: '555-123-4567',
+		address: '123 Main St',
+		city: 'Anytown',
+		state: 'CA',
+		zipCode: '12345',
+		country: 'USA',
+		occupation: 'Software Developer',
+		interests: ['technology', 'reading', 'travel'],
+		subscribeNewsletter: true,
+		preferredContact: 'email',
+		notes: 'This is sample data from our mock API endpoint.',
+	};
+
+	// Simulate network delay
+	setTimeout(() => {
+		res.json(formData);
+	}, 500);
+});
+
 // Function to handle Cloudflare challenges
 async function handleCloudflareChallenge(page) {
 	try {
