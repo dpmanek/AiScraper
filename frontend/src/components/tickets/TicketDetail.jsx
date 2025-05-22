@@ -13,6 +13,7 @@ const TicketDetail = () => {
 	const [scrapeError, setScrapeError] = useState(null);
 	const [scrapedData, setScrapedData] = useState(null);
 	const [showScrapedData, setShowScrapedData] = useState(false);
+	// Removed caching states as we always want to scrape fresh data
 
 	useEffect(() => {
 		const fetchTicket = async () => {
@@ -41,9 +42,13 @@ const TicketDetail = () => {
 		setScrapeError(null);
 		setScrapedData(null);
 		setShowScrapedData(false);
+		// Removed setFromCache(false) as we no longer use caching
 
 		try {
-			const response = await fetch(`http://localhost:5000/api/scrape/${id}`, {
+			// Always scrape fresh data
+			const url = `http://localhost:5000/api/scrape/${id}`;
+
+			const response = await fetch(url, {
 				method: 'POST',
 			});
 
@@ -134,16 +139,18 @@ const TicketDetail = () => {
 					</div>
 				</div>
 				<div className="ticket-header-right">
-					<Link to="/tickets" className="back-button">
-						Back to Tickets
-					</Link>
-					<button
-						className="scrape-button"
-						onClick={handleScrape}
-						disabled={scraping}
-					>
-						{scraping ? 'Scraping...' : 'Scrape Ticket Data'}
-					</button>
+					<div className="ticket-actions">
+						<Link to="/tickets" className="back-button">
+							Back to Tickets
+						</Link>
+						<button
+							className="scrape-button"
+							onClick={handleScrape}
+							disabled={scraping}
+						>
+							{scraping ? 'Scraping...' : 'Scrape Ticket Data'}
+						</button>
+					</div>
 				</div>
 			</div>
 

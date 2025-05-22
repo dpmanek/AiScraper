@@ -11,19 +11,12 @@ puppeteerExtra.use(StealthPlugin());
 // @access  Public
 exports.scrapeTicket = async (req, res) => {
 	try {
-		// Find the ticket
-		const ticket = await Ticket.findOne({ ticketId: req.params.id });
+		const ticketId = req.params.id;
 
-		if (!ticket) {
-			return res.status(404).json({
-				success: false,
-				error: 'Ticket not found',
-			});
-		}
-
-		// Construct the URL to scrape
-		const baseUrl = req.protocol + '://' + req.get('host');
-		const ticketUrl = `${baseUrl}/tickets/${ticket.ticketId}`;
+		// Construct the URL to scrape - use the frontend URL
+		// In development, the frontend runs on port 5173 (Vite default)
+		const frontendUrl = 'http://localhost:5173';
+		const ticketUrl = `${frontendUrl}/tickets/${ticketId}`;
 
 		// Launch the browser
 		const browser = await puppeteerExtra.launch({
@@ -34,30 +27,93 @@ exports.scrapeTicket = async (req, res) => {
 		try {
 			const page = await browser.newPage();
 
-			// Navigate to the ticket page
-			await page.goto(ticketUrl, { waitUntil: 'networkidle2' });
+			// Set viewport size to ensure all elements are visible
+			await page.setViewport({ width: 1280, height: 800 });
 
-			// Instead of scraping from the page, use the ticket data directly
-			const scrapedData = {
-				ticketId: ticket.ticketId,
-				title: ticket.title,
-				description: ticket.description,
-				priority: ticket.priority,
-				category: ticket.category,
-				requesterName: ticket.requesterName,
-				requesterEmail: ticket.requesterEmail,
-				status: ticket.status,
-				createdAt: ticket.createdAt,
-				updatedAt: ticket.updatedAt,
-			};
+			// Navigate to the ticket page and wait for it to be fully loaded
+			await page.goto(ticketUrl, {
+				waitUntil: 'networkidle2',
+				timeout: 30000,
+			});
+
+			// Wait for critical elements to be available
+			await page
+				.waitForSelector('.ticket-content', { timeout: 5000 })
+				.catch((e) => console.log('Warning: .ticket-content not found'));
+
+			// Wait an additional 2 seconds for all content to render
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+
+			// Actually scrape the data from the page using Puppeteer with exact selectors
+			const scrapedData = await page.evaluate(() => {
+				// Helper function to safely get text content
+				const getText = (selector) => {
+					const element = document.querySelector(selector);
+					return element ? element.textContent.trim() : '';
+				};
+
+				// Extract data using the exact structure from the TicketDetail.jsx component
+				// Ticket ID is in a span with class 'ticket-id' inside an h2 element
+				const ticketId = getText('h2 .ticket-id');
+
+				// Title is in a p with class 'ticket-title'
+				const title = getText('p.ticket-title');
+
+				// Description is in a p with class 'ticket-description'
+				const description = getText('p.ticket-description');
+
+				// Priority is in a span with classes 'priority-badge' and 'ticket-priority'
+				const priority =
+					getText('span.priority-badge.ticket-priority') || 'Medium';
+
+				// Status is in a span with classes 'status-badge' and 'ticket-status'
+				const status = getText('span.status-badge.ticket-status') || 'Open';
+
+				// Category is in a span with class 'detail-value ticket-category'
+				const category = getText('.detail-value.ticket-category');
+
+				// Requester name is in a span with class 'detail-value ticket-requester-name'
+				const requesterName = getText('.detail-value.ticket-requester-name');
+
+				// Requester email is in a span with class 'detail-value ticket-requester-email'
+				const requesterEmail = getText('.detail-value.ticket-requester-email');
+
+				// Created date is in a span with class 'detail-value ticket-created-at'
+				const createdAtText = getText('.detail-value.ticket-created-at');
+
+				// Updated date is in a span with class 'detail-value ticket-updated-at'
+				const updatedAtText = getText('.detail-value.ticket-updated-at');
+
+				// Convert date strings to Date objects
+				const createdAt = createdAtText
+					? new Date(createdAtText).toISOString()
+					: new Date().toISOString();
+				const updatedAt = updatedAtText
+					? new Date(updatedAtText).toISOString()
+					: new Date().toISOString();
+
+				return {
+					ticketId,
+					title,
+					description,
+					priority,
+					category,
+					requesterName,
+					requesterEmail,
+					status,
+					createdAt,
+					updatedAt,
+				};
+			});
 
 			// Save the scraped data to the database
 			const scrapedTicket = await ScrapedTicket.create({
-				originalTicketId: ticket.ticketId,
+				originalTicketId: ticketId,
 				scrapedData,
 				sourceUrl: ticketUrl,
 			});
 
+			// Return both the scraped data and the database record
 			res.status(200).json({
 				success: true,
 				data: {
@@ -78,52 +134,4 @@ exports.scrapeTicket = async (req, res) => {
 	}
 };
 
-// @desc    Get all scraped tickets
-// @route   GET /api/scraped-tickets
-// @access  Public
-exports.getScrapedTickets = async (req, res) => {
-	try {
-		const scrapedTickets = await ScrapedTicket.find().sort({ createdAt: -1 });
-
-		res.status(200).json({
-			success: true,
-			count: scrapedTickets.length,
-			data: scrapedTickets,
-		});
-	} catch (error) {
-		console.error('Error getting scraped tickets:', error);
-		res.status(500).json({
-			success: false,
-			error: 'Server Error',
-		});
-	}
-};
-
-// @desc    Get a single scraped ticket
-// @route   GET /api/scraped-tickets/:id
-// @access  Public
-exports.getScrapedTicket = async (req, res) => {
-	try {
-		const scrapedTicket = await ScrapedTicket.findOne({
-			originalTicketId: req.params.id,
-		});
-
-		if (!scrapedTicket) {
-			return res.status(404).json({
-				success: false,
-				error: 'Scraped ticket not found',
-			});
-		}
-
-		res.status(200).json({
-			success: true,
-			data: scrapedTicket,
-		});
-	} catch (error) {
-		console.error('Error getting scraped ticket:', error);
-		res.status(500).json({
-			success: false,
-			error: 'Server Error',
-		});
-	}
-};
+// Removed unused functions for getting scraped tickets

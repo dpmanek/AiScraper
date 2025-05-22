@@ -2,6 +2,7 @@ const Tesseract = require('tesseract.js');
 const fs = require('fs');
 const axios = require('axios');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Anthropic = require('@anthropic-ai/sdk');
 const puppeteerExtra = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
@@ -12,6 +13,11 @@ puppeteerExtra.use(StealthPlugin());
 const googleAI = new GoogleGenerativeAI(
 	process.env.GEMINI_API_KEY || 'dummy-key'
 );
+
+// Initialize Anthropic for Claude
+const anthropic = new Anthropic({
+	apiKey: process.env.ANTHROPIC_API_KEY || 'dummy-key',
+});
 
 // @desc    Process uploaded image with OCR and LLM
 // @route   POST /api/process-image
@@ -132,7 +138,7 @@ exports.analyzeText = async (req, res) => {
 	}
 };
 
-// Function to process text with LLM (OpenAI or Gemini)
+// Function to process text with LLM (OpenAI, Gemini, or Claude)
 async function processWithLLM(text, provider = 'openai') {
 	// Truncate text if it's too long (LLMs have token limits)
 	const truncatedText =
@@ -141,8 +147,35 @@ async function processWithLLM(text, provider = 'openai') {
 	// Use the selected provider
 	if (provider.toLowerCase() === 'gemini') {
 		return processWithGemini(truncatedText);
+	} else if (provider.toLowerCase() === 'claude') {
+		return processWithClaude(truncatedText);
 	} else {
 		return processWithOpenAI(truncatedText);
+	}
+}
+
+// Function to process text with Claude
+async function processWithClaude(text) {
+	try {
+		// Create a message with Claude 3 Sonnet (latest version)
+		const message = await anthropic.messages.create({
+			model: 'claude-3-7-sonnet-20250219', // Using the specific model version requested
+			max_tokens: 1000,
+			system:
+				'You are a helpful assistant that summarizes web content and highlights key information. Provide your response in two sections: 1) Summary and 2) Key Information',
+			messages: [
+				{
+					role: 'user',
+					content: `Summarize the following web content and highlight key information (like product details, pricing, descriptions, etc.): ${text}`,
+				},
+			],
+			temperature: 0.5,
+		});
+
+		return message.content[0].text;
+	} catch (error) {
+		console.error('Error processing with Claude:', error);
+		return 'Error processing content with Claude. Please try again or switch to a different AI provider.';
 	}
 }
 

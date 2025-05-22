@@ -110,11 +110,10 @@ const Home = () => {
 			)}
 
 			<section className="tickets-promo-section">
-				<h2>Need to Track Your Scraping Tasks?</h2>
+				<h2>Create tickets in SIMBA?</h2>
 				<p>
 					Use our ticketing system to create, manage, and track your content
-					scraping tasks. Create tickets for websites you need to analyze and
-					keep track of your progress.
+					scraping tasks.
 				</p>
 				<div className="promo-buttons">
 					<a href="/tickets" className="promo-button">

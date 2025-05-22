@@ -30,6 +30,31 @@
 
 .ticket-header-right {
 	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.scrape-options {
+	display: flex;
+	align-items: center;
+	margin-bottom: 0.5rem;
+}
+
+.cache-toggle {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.9rem;
+	color: #666;
+	cursor: pointer;
+}
+
+.cache-toggle input[type='checkbox'] {
+	margin: 0;
+}
+
+.ticket-actions {
+	display: flex;
 	gap: 1rem;
 }
 

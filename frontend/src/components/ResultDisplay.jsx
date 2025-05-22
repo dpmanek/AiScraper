@@ -11,7 +11,22 @@ const ResultDisplay = ({ data, onReanalyze }) => {
 	const { extractedText, scrapedText, llmResponse, provider } = data;
 	const contentText = extractedText || scrapedText || '';
 	const aiProvider = provider || 'AI';
-	const providerName = aiProvider === 'gemini' ? 'Google Gemini' : 'OpenAI GPT';
+
+	// Get the display name for the AI provider
+	const getProviderName = (providerCode) => {
+		switch (providerCode) {
+			case 'gemini':
+				return 'Google Gemini';
+			case 'claude':
+				return 'Claude 3.7 Sonnet';
+			case 'openai':
+				return 'OpenAI GPT';
+			default:
+				return 'AI';
+		}
+	};
+
+	const providerName = getProviderName(aiProvider);
 
 	const handleProviderChange = (e) => {
 		setSelectedProvider(e.target.value);
@@ -73,6 +88,7 @@ const ResultDisplay = ({ data, onReanalyze }) => {
 										className="provider-dropdown"
 									>
 										<option value="gemini">Google Gemini</option>
+										<option value="claude">Claude 3.7 Sonnet</option>
 										<option value="openai">OpenAI GPT</option>
 									</select>
 									<button
@@ -118,6 +134,7 @@ const ResultDisplay = ({ data, onReanalyze }) => {
 										className="provider-dropdown"
 									>
 										<option value="gemini">Google Gemini</option>
+										<option value="claude">Claude 3.7 Sonnet</option>
 										<option value="openai">OpenAI GPT</option>
 									</select>
 									<button
