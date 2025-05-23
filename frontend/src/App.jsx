@@ -15,7 +15,7 @@ function App() {
 				<Navbar />
 
 				<header>
-					<h1>Website Content Analyzer</h1>
+					<h1>Website Content Scraper and Analyzer</h1>
 					<p className="subtitle">
 						Extract and analyze content from websites using AI
 					</p>

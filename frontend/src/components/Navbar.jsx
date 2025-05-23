@@ -6,7 +6,7 @@ const Navbar = () => {
 		<nav className="navbar">
 			<div className="navbar-container">
 				<Link to="/" className="navbar-logo">
-					Website Content Analyzer
+					AIScraper
 				</Link>
 				<ul className="nav-menu">
 					<li className="nav-item">

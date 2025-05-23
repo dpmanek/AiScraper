@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import PromptEditor from './PromptEditor';
 
-const ResultDisplay = ({ data, onReanalyze }) => {
+const ResultDisplay = ({ data, onReanalyze, customPrompt, onPromptChange }) => {
 	const [activeTab, setActiveTab] = useState('extracted');
 	const [selectedProvider, setSelectedProvider] = useState('gemini');
 	const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -121,34 +122,42 @@ const ResultDisplay = ({ data, onReanalyze }) => {
 						</div>
 
 						{llmResponse && (
-							<div className="analysis-controls">
-								<div className="provider-selector horizontal">
-									<label htmlFor="ai-provider-results-tab">
-										Try a different AI:
-									</label>
-									<select
-										id="ai-provider-results-tab"
-										value={selectedProvider}
-										onChange={handleProviderChange}
-										disabled={isAnalyzing}
-										className="provider-dropdown"
-									>
-										<option value="gemini">Google Gemini</option>
-										<option value="claude">Claude 3.7 Sonnet</option>
-										<option value="openai">OpenAI GPT</option>
-									</select>
-									<button
-										className="analyze-button"
-										onClick={handleAnalyze}
-										disabled={isAnalyzing || selectedProvider === aiProvider}
-									>
-										{isAnalyzing ? 'Analyzing...' : 'Analyze Content'}
-									</button>
+							<>
+								<PromptEditor
+									defaultPrompt={customPrompt}
+									onSave={onPromptChange}
+									onCancel={() => {}}
+								/>
+
+								<div className="analysis-controls">
+									<div className="provider-selector horizontal">
+										<label htmlFor="ai-provider-results-tab">
+											Try a different AI:
+										</label>
+										<select
+											id="ai-provider-results-tab"
+											value={selectedProvider}
+											onChange={handleProviderChange}
+											disabled={isAnalyzing}
+											className="provider-dropdown"
+										>
+											<option value="gemini">Google Gemini</option>
+											<option value="claude">Claude 3.7 Sonnet</option>
+											<option value="openai">OpenAI GPT</option>
+										</select>
+										<button
+											className="analyze-button"
+											onClick={handleAnalyze}
+											disabled={isAnalyzing || selectedProvider === aiProvider}
+										>
+											{isAnalyzing ? 'Analyzing...' : 'Analyze Content'}
+										</button>
+									</div>
+									{analysisError && (
+										<div className="error-message">{analysisError}</div>
+									)}
 								</div>
-								{analysisError && (
-									<div className="error-message">{analysisError}</div>
-								)}
-							</div>
+							</>
 						)}
 					</div>
 				)}

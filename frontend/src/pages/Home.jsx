@@ -2,11 +2,15 @@ import { useState } from 'react';
 import ImageUploader from '../components/ImageUploader';
 import UrlInput from '../components/UrlInput';
 import ResultDisplay from '../components/ResultDisplay';
+import PromptEditor from '../components/PromptEditor';
 
 const Home = () => {
 	const [inputMethod, setInputMethod] = useState('image'); // 'image' or 'url'
 	const [processedData, setProcessedData] = useState(null);
 	const [isReanalyzing, setIsReanalyzing] = useState(false);
+	const [customPrompt, setCustomPrompt] = useState(
+		'You are a helpful assistant that summarizes web content and highlights key information. Provide your response in two sections: 1) Summary and 2) Key Information'
+	);
 
 	const handleProcessComplete = (data) => {
 		setProcessedData(data);
@@ -44,6 +48,7 @@ const Home = () => {
 				body: JSON.stringify({
 					text: content,
 					provider: provider,
+					prompt: customPrompt,
 				}),
 			});
 
@@ -105,7 +110,12 @@ const Home = () => {
 							Start New Analysis
 						</button>
 					</div>
-					<ResultDisplay data={processedData} onReanalyze={handleReanalyze} />
+					<ResultDisplay
+						data={processedData}
+						onReanalyze={handleReanalyze}
+						customPrompt={customPrompt}
+						onPromptChange={setCustomPrompt}
+					/>
 				</section>
 			)}
 

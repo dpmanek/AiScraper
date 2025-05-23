@@ -38,7 +38,8 @@ exports.processImage = async (req, res) => {
 
 		// Process with LLM if text was extracted
 		if (extractedText.trim()) {
-			const llmResponse = await processWithLLM(extractedText, provider);
+			const prompt = req.body.prompt || null;
+			const llmResponse = await processWithLLM(extractedText, provider, prompt);
 
 			// Clean up the uploaded file
 			fs.unlinkSync(imagePath);
@@ -98,7 +99,12 @@ exports.scrapeUrl = async (req, res) => {
 		}
 
 		// Process with LLM
-		const llmResponse = await processWithLLM(scrapedText, selectedProvider);
+		const prompt = req.body.prompt || null;
+		const llmResponse = await processWithLLM(
+			scrapedText,
+			selectedProvider,
+			prompt
+		);
 
 		return res.json({
 			scrapedText,
@@ -116,7 +122,7 @@ exports.scrapeUrl = async (req, res) => {
 // @access  Public
 exports.analyzeText = async (req, res) => {
 	try {
-		const { text, provider } = req.body;
+		const { text, provider, prompt } = req.body;
 
 		if (!text || !text.trim()) {
 			return res.status(400).json({ error: 'Text content is required' });
@@ -126,7 +132,7 @@ exports.analyzeText = async (req, res) => {
 			provider || process.env.DEFAULT_AI_PROVIDER || 'openai';
 
 		// Process with the selected LLM
-		const llmResponse = await processWithLLM(text, selectedProvider);
+		const llmResponse = await processWithLLM(text, selectedProvider, prompt);
 
 		return res.json({
 			llmResponse,
@@ -139,29 +145,35 @@ exports.analyzeText = async (req, res) => {
 };
 
 // Function to process text with LLM (OpenAI, Gemini, or Claude)
-async function processWithLLM(text, provider = 'openai') {
+async function processWithLLM(text, provider = 'openai', customPrompt = null) {
 	// Truncate text if it's too long (LLMs have token limits)
 	const truncatedText =
 		text.length > 15000 ? text.substring(0, 15000) + '...' : text;
 
+	// Default prompt if none provided
+	const defaultPrompt =
+		'You are a helpful assistant that summarizes web content and highlights key information. Provide your response in two sections: 1) Summary and 2) Key Information';
+	const prompt = customPrompt || defaultPrompt;
+
 	// Use the selected provider
 	if (provider.toLowerCase() === 'gemini') {
-		return processWithGemini(truncatedText);
+		return processWithGemini(truncatedText, prompt);
 	} else if (provider.toLowerCase() === 'claude') {
-		return processWithClaude(truncatedText);
+		return processWithClaude(truncatedText, prompt);
 	} else {
-		return processWithOpenAI(truncatedText);
+		return processWithOpenAI(truncatedText, prompt);
 	}
 }
 
 // Function to process text with Claude
-async function processWithClaude(text) {
+async function processWithClaude(text, customPrompt = null) {
 	try {
 		// Create a message with Claude 3 Sonnet (latest version)
 		const message = await anthropic.messages.create({
 			model: 'claude-3-7-sonnet-20250219', // Using the specific model version requested
 			max_tokens: 1000,
 			system:
+				customPrompt ||
 				'You are a helpful assistant that summarizes web content and highlights key information. Provide your response in two sections: 1) Summary and 2) Key Information',
 			messages: [
 				{
@@ -180,7 +192,7 @@ async function processWithClaude(text) {
 }
 
 // Function to process text with OpenAI
-async function processWithOpenAI(text) {
+async function processWithOpenAI(text, customPrompt = null) {
 	try {
 		const response = await axios.post(
 			'https://api.openai.com/v1/chat/completions',
@@ -190,6 +202,7 @@ async function processWithOpenAI(text) {
 					{
 						role: 'system',
 						content:
+							customPrompt ||
 							'You are a helpful assistant that summarizes web content and highlights key information. Provide your response in two sections: 1) Summary and 2) Key Information',
 					},
 					{
@@ -223,17 +236,22 @@ async function processWithOpenAI(text) {
 }
 
 // Function to process text with Gemini
-async function processWithGemini(text) {
+async function processWithGemini(text, customPrompt = null) {
 	try {
 		// Get the generative model (Gemini Pro)
 		const model = googleAI.getGenerativeModel({ model: 'gemini-pro' });
 
-		// Create the prompt
-		const prompt = `Summarize the following web content and highlight key information (like product details, pricing, descriptions, etc.): ${text}
+		// Default prompt structure
+		const defaultPromptText = `Summarize the following web content and highlight key information (like product details, pricing, descriptions, etc.): ${text}
         
         Provide your response in two sections:
         1) Summary
         2) Key Information`;
+
+		// Use custom prompt if provided, otherwise use default
+		const prompt = customPrompt
+			? `${customPrompt}\n\nContent to analyze: ${text}`
+			: defaultPromptText;
 
 		// Generate content
 		const result = await model.generateContent(prompt);
