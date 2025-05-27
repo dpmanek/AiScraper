@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/TicketList.css';
 
-const TicketList = () => {
+const ARTTicketList = () => {
 	const [tickets, setTickets] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -10,14 +10,18 @@ const TicketList = () => {
 
 	const fetchTickets = async () => {
 		try {
+			// In a real application, this would fetch from an ART API endpoint
+			// For now, we'll use the same endpoint as SIMBA tickets
 			const response = await fetch('http://localhost:5000/api/tickets');
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch tickets');
+				throw new Error('Failed to fetch ART tickets');
 			}
 
 			const data = await response.json();
-			setTickets(data.data);
+			// Filter tickets to only include those with an art_id
+			const artTickets = data.data.filter((ticket) => ticket.art_id);
+			setTickets(artTickets);
 		} catch (err) {
 			setError(err.message);
 		} finally {
@@ -99,7 +103,7 @@ const TicketList = () => {
 	};
 
 	if (loading) {
-		return <div className="loading">Loading tickets...</div>;
+		return <div className="loading">Loading ART tickets...</div>;
 	}
 
 	if (error) {
@@ -109,10 +113,10 @@ const TicketList = () => {
 	if (tickets.length === 0) {
 		return (
 			<div className="no-tickets">
-				<h2>No tickets found</h2>
+				<h2>No ART tickets found</h2>
 				<p>Create a new ticket to get started.</p>
-				<Link to="/tickets/new" className="create-ticket-button">
-					Create Ticket
+				<Link to="/art" className="create-ticket-button">
+					Create ART Ticket
 				</Link>
 			</div>
 		);
@@ -121,9 +125,9 @@ const TicketList = () => {
 	return (
 		<div className="ticket-list-container">
 			<div className="ticket-list-header">
-				<h2>All Tickets</h2>
-				<Link to="/tickets/new" className="create-ticket-button">
-					Create Ticket
+				<h2>All ART Tickets</h2>
+				<Link to="/art" className="create-ticket-button">
+					Create ART Ticket
 				</Link>
 			</div>
 
@@ -142,15 +146,15 @@ const TicketList = () => {
 							<th>Request Type</th>
 							<th>Priority</th>
 							<th>Status</th>
-							<th>SIMBA Status</th>
+							<th>ART Status</th>
 							<th>Created</th>
 							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
 						{tickets.map((ticket) => (
-							<tr key={ticket.simba_id}>
-								<td>{ticket.simba_id}</td>
+							<tr key={ticket.art_id}>
+								<td>{ticket.art_id}</td>
 								<td>{ticket.title}</td>
 								<td>{formatTicketCategory(ticket.ticket_category)}</td>
 								<td>
@@ -170,24 +174,18 @@ const TicketList = () => {
 									</span>
 								</td>
 								<td>
-									<span className="simba-status">
-										{ticket.simba_status || 'N/A'}
+									<span className="art-status">
+										{ticket.art_status || 'N/A'}
 									</span>
 								</td>
 								<td>{new Date(ticket.createdAt).toLocaleDateString()}</td>
 								<td>
 									<div className="action-buttons">
 										<Link
-											to={`/tickets/${ticket.simba_id}`}
+											to={`/art-tickets/${ticket.art_id}`}
 											className="view-button"
 										>
 											View
-										</Link>
-										<Link
-											to={`/tickets/${ticket.simba_id}/scrape`}
-											className="scrape-button"
-										>
-											Scrape
 										</Link>
 										<button
 											className="delete-button"
@@ -206,4 +204,4 @@ const TicketList = () => {
 	);
 };
 
-export default TicketList;
+export default ARTTicketList;

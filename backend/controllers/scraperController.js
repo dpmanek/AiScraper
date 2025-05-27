@@ -11,12 +11,12 @@ puppeteerExtra.use(StealthPlugin());
 // @access  Public
 exports.scrapeTicket = async (req, res) => {
 	try {
-		const ticketId = req.params.id;
+		const simbaId = req.params.id;
 
 		// Construct the URL to scrape - use the frontend URL
 		// In development, the frontend runs on port 5173 (Vite default)
 		const frontendUrl = 'http://localhost:5173';
-		const ticketUrl = `${frontendUrl}/tickets/${ticketId}`;
+		const ticketUrl = `${frontendUrl}/tickets/${simbaId}`;
 
 		// Launch the browser
 		const browser = await puppeteerExtra.launch({
@@ -53,8 +53,8 @@ exports.scrapeTicket = async (req, res) => {
 				};
 
 				// Extract data using the exact structure from the TicketDetail.jsx component
-				// Ticket ID is in a span with class 'ticket-id' inside an h2 element
-				const ticketId = getText('h2 .ticket-id');
+				// SIMBA ID is in a span with class 'ticket-id' inside an h2 element
+				const simbaId = getText('h2 .ticket-id');
 
 				// Title is in a p with class 'ticket-title'
 				const title = getText('p.ticket-title');
@@ -92,8 +92,73 @@ exports.scrapeTicket = async (req, res) => {
 					? new Date(updatedAtText).toISOString()
 					: new Date().toISOString();
 
+				// New fields - try to scrape them if they exist
+				const ticket_category =
+					getText('.detail-value.ticket-ticket-category') || '';
+				const requested_resource =
+					getText('.detail-value.ticket-requested-resource') || '';
+				const access_level =
+					getText('.detail-value.ticket-access-level') || 'Read';
+				const current_status =
+					getText('.detail-value.ticket-current-status') || 'Pending Approval';
+
+				// System fields - these might not be visible on the frontend
+				const simba_id = getText('.detail-value.ticket-simba-id') || simbaId;
+				const simba_status =
+					getText('.detail-value.ticket-simba-status') || 'InProgress';
+				// Don't generate an ART ID when scraping, use the existing one if available
+				const art_id = getText('.detail-value.ticket-art-id') || null;
+				const art_status = getText('.detail-value.ticket-art-status') || null;
+				const provisioning_outcome =
+					getText('.detail-value.ticket-provisioning-outcome') || 'None';
+				const remediation_needed =
+					getText('.detail-value.ticket-remediation-needed') || 'None';
+
+				// For complex fields, we'll use defaults if not found
+				// These would typically be handled by backend logic
+				const error_details = {
+					code: getText('.detail-value.ticket-error-code') || 'NO_ERROR',
+					message: getText('.detail-value.ticket-error-message') || 'No error',
+				};
+
+				// Split requester name into first and last name for approver
+				const nameParts = requesterName
+					? requesterName.split(' ')
+					: ['Jane', 'Smith'];
+				const firstName = nameParts[0] || 'Jane';
+				const lastName =
+					nameParts.length > 1 ? nameParts.slice(1).join(' ') : 'Smith';
+
+				const approver = {
+					approver_id:
+						getText('.detail-value.ticket-approver-id') || 'approver-001',
+					first_name:
+						getText('.detail-value.ticket-approver-first-name') || firstName,
+					last_name:
+						getText('.detail-value.ticket-approver-last-name') || lastName,
+					approval_for: ['SIMBA'],
+				};
+
+				// Workflow state - use default if not found
+				const workflow_state = [
+					{
+						current_node:
+							getText('.detail-value.ticket-workflow-current-node') ||
+							'submission',
+						steps_completed: ['validate_request', 'log_ticket'],
+					},
+					{
+						current_node: 'approval',
+						steps_completed: [],
+					},
+				];
+
+				// Timestamps
+				const created_timestamp = createdAt;
+				const last_updated_timestamp = updatedAt;
+
 				return {
-					ticketId,
+					simbaId,
 					title,
 					description,
 					priority,
@@ -103,12 +168,28 @@ exports.scrapeTicket = async (req, res) => {
 					status,
 					createdAt,
 					updatedAt,
+					// New fields
+					ticket_category,
+					requested_resource,
+					access_level,
+					current_status,
+					simba_id,
+					simba_status,
+					art_id,
+					art_status,
+					provisioning_outcome,
+					remediation_needed,
+					error_details,
+					approver,
+					workflow_state,
+					created_timestamp,
+					last_updated_timestamp,
 				};
 			});
 
 			// Save the scraped data to the database
 			const scrapedTicket = await ScrapedTicket.create({
-				originalTicketId: ticketId,
+				originalSimbaId: simbaId,
 				scrapedData,
 				sourceUrl: ticketUrl,
 			});

@@ -9,7 +9,11 @@ const SimbaForm = () => {
 		category: '',
 		requesterName: '',
 		requesterEmail: '',
+		// New fields
+		ticket_category: 'REQ-HR-ONBOARD',
+		requested_resource: '',
 		// Status will be automatically set to 'Open' on the server
+		// current_status will be automatically set to 'Pending Approval' on the server
 	});
 
 	const [loading, setLoading] = useState(false);
@@ -55,6 +59,8 @@ const SimbaForm = () => {
 				category: '',
 				requesterName: '',
 				requesterEmail: '',
+				ticket_category: 'REQ-HR-ONBOARD',
+				requested_resource: '',
 			});
 		} catch (err) {
 			setError(err.message);
@@ -119,17 +125,35 @@ const SimbaForm = () => {
 							<option value="High">High</option>
 						</select>
 					</div>
+				</div>
 
+				{/* New fields */}
+				<div className="form-row">
 					<div className="form-group">
-						<label htmlFor="category">Category *</label>
-						<input
-							type="text"
-							id="category"
-							name="category"
-							value={formData.category}
+						<label htmlFor="ticket_category">Request Type *</label>
+						<select
+							id="ticket_category"
+							name="ticket_category"
+							value={formData.ticket_category}
 							onChange={handleChange}
 							required
-							placeholder="e.g., Technical Issue, Feature Request"
+						>
+							<option value="REQ-HR-ONBOARD">HR Onboarding</option>
+							<option value="REQ-DEV-REPO">Developer Repository</option>
+							<option value="REQ-MARKETING-CRM">Marketing CRM</option>
+							<option value="REQ-FIN-APP">Finance Application</option>
+						</select>
+					</div>
+
+					<div className="form-group">
+						<label htmlFor="requested_resource">Requested Resource</label>
+						<input
+							type="text"
+							id="requested_resource"
+							name="requested_resource"
+							value={formData.requested_resource}
+							onChange={handleChange}
+							placeholder="e.g., GitHub Repo, Salesforce Account"
 						/>
 					</div>
 				</div>

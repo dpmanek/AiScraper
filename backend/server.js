@@ -13,6 +13,9 @@ const ticketRoutes = require('./routes/tickets');
 const scraperRoutes = require('./routes/scraper');
 const analyzerRoutes = require('./routes/analyzer');
 
+// Import Swagger configuration
+const { swaggerUi, swaggerDocs } = require('./swagger');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -62,6 +65,9 @@ if (!fs.existsSync(uploadDir)) {
 // Moved all helper functions to analyzerController.js
 
 // Removed text analysis endpoint - now handled by analyzer routes
+
+// Set up Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Mount routes
 app.use('/api/tickets', ticketRoutes);

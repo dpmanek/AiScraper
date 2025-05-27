@@ -43,8 +43,12 @@
 
 .ticket-table {
 	width: 100%;
-	border-collapse: collapse;
+	border-collapse: separate;
+	border-spacing: 0;
 	margin-top: 1rem;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .ticket-table th,
@@ -55,13 +59,30 @@
 }
 
 .ticket-table th {
-	background-color: #f8f9fa;
+	background-color: #f1f5f9;
 	font-weight: 600;
 	color: #2c3e50;
+	text-transform: uppercase;
+	font-size: 0.8rem;
+	letter-spacing: 0.5px;
+}
+
+.ticket-table tr:last-child td {
+	border-bottom: none;
 }
 
 .ticket-table tr:hover {
-	background-color: #f8f9fa;
+	background-color: #f8fafc;
+	transition: background-color 0.2s ease;
+}
+
+.ticket-table tbody tr {
+	transition: all 0.2s ease;
+}
+
+.ticket-table tbody tr:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
 /* Priority badges */
@@ -120,35 +141,66 @@
 /* Action buttons */
 .action-buttons {
 	display: flex;
-	gap: 0.5rem;
+	gap: 10px;
+	justify-content: flex-end;
 }
 
 .view-button,
-.scrape-button {
+.scrape-button,
+.delete-button {
 	padding: 0.4rem 0.75rem;
 	border-radius: 4px;
 	font-size: 0.85rem;
 	font-weight: 600;
 	text-decoration: none;
 	transition: background-color 0.3s;
+	cursor: pointer;
+	border: none;
+	min-width: 80px;
+	text-align: center;
 }
 
 .view-button {
-	background-color: #e3f2fd;
-	color: #1976d2;
+	background-color: #1976d2;
+	color: white;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
 }
 
 .view-button:hover {
-	background-color: #bbdefb;
+	background-color: #1565c0;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .scrape-button {
-	background-color: #fff3e0;
-	color: #f57c00;
+	background-color: #f57c00;
+	color: white;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
 }
 
 .scrape-button:hover {
-	background-color: #ffe0b2;
+	background-color: #ef6c00;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.delete-button {
+	background-color: #e53935;
+	color: white;
+	border: none;
+	padding: 0.4rem 0.75rem;
+	border-radius: 4px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.delete-button:hover {
+	background-color: #c62828;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Loading and error states */

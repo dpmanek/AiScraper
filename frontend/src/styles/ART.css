@@ -178,3 +178,11 @@ textarea {
 	outline: none;
 	box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.3);
 }
+
+/* Field note styles */
+.field-note {
+	font-size: 0.8rem;
+	color: #718096;
+	margin-top: 0.25rem;
+	font-style: italic;
+}

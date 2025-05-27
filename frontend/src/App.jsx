@@ -5,6 +5,8 @@ import ART from './components/ART';
 import TicketsPage from './pages/tickets/TicketsPage';
 import NewTicketPage from './pages/tickets/NewTicketPage';
 import TicketDetailPage from './pages/tickets/TicketDetailPage';
+import ARTTicketDetailPage from './pages/tickets/ARTTicketDetailPage';
+import ARTTicketsPage from './pages/tickets/ARTTicketsPage';
 import TicketScraperPage from './pages/tickets/TicketScraperPage';
 import './App.css';
 
@@ -25,10 +27,12 @@ function App() {
 					<Routes>
 						<Route path="/" element={<Home />} />
 						<Route path="/art" element={<ART />} />
+						<Route path="/art-tickets" element={<ARTTicketsPage />} />
 						<Route path="/tickets" element={<TicketsPage />} />
 						<Route path="/tickets/new" element={<NewTicketPage />} />
 						<Route path="/tickets/:id" element={<TicketDetailPage />} />
 						<Route path="/tickets/:id/scrape" element={<TicketScraperPage />} />
+						<Route path="/art-tickets/:id" element={<ARTTicketDetailPage />} />
 					</Routes>
 				</main>
 
