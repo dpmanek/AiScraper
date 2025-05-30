@@ -114,14 +114,86 @@ const swaggerOptions = {
 						originalSimbaId: {
 							type: 'string',
 							description: 'Reference to the original ticket ID',
+							example: 'SIMBA-0001',
 						},
 						scrapedData: {
 							type: 'object',
 							description: 'Data scraped from the ticket',
+							properties: {
+								simba_id: {
+									type: 'string',
+									description: 'SIMBA ID of the ticket',
+									example: 'SIMBA-0001',
+								},
+								title: {
+									type: 'string',
+									description: 'Title of the ticket',
+									example: 'Access Request',
+								},
+								description: {
+									type: 'string',
+									description: 'Description of the ticket',
+									example: 'Need access to AWS account',
+								},
+								priority: {
+									type: 'string',
+									description: 'Priority level of the ticket',
+									example: 'Medium',
+								},
+								status: {
+									type: 'string',
+									description: 'Status of the ticket',
+									example: 'Open',
+								},
+								ticket_category: {
+									type: 'string',
+									description: 'Category of the ticket',
+									example: 'REQ-DEV-REPO',
+								},
+								requested_resource: {
+									type: 'string',
+									description: 'Resource being requested',
+									example: 'EC2 instance',
+								},
+								access_level: {
+									type: 'string',
+									description: 'Access level for the requested resource',
+									example: 'Read',
+								},
+								requesterName: {
+									type: 'string',
+									description: 'Name of the requester',
+									example: 'John Doe',
+								},
+								requesterEmail: {
+									type: 'string',
+									description: 'Email of the requester',
+									example: 'john.doe@example.com',
+								},
+								art_id: {
+									type: 'string',
+									description: 'ART ID of the ticket if available',
+									example: 'ART-1234',
+									nullable: true,
+								},
+								art_status: {
+									type: 'string',
+									description: 'ART status of the ticket if available',
+									example: 'Submitted',
+									nullable: true,
+								},
+							},
 						},
 						sourceUrl: {
 							type: 'string',
 							description: 'URL from which the data was scraped',
+							example: 'http://example.com/tickets/SIMBA-0001',
+						},
+						timestamp: {
+							type: 'string',
+							format: 'date-time',
+							description: 'Timestamp when the data was scraped',
+							example: '2025-05-27T18:00:00Z',
 						},
 					},
 				},

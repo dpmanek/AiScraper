@@ -259,6 +259,61 @@ router.route('/:id').get(getTicket).put(updateTicket).delete(deleteTicket);
  *           type: string
  *         description: SIMBA ID of the ticket
  *         example: SIMBA-0001
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Title of the ticket
+ *                 example: "Access Request"
+ *               firstName:
+ *                 type: string
+ *                 description: First name of the requester
+ *                 example: "John"
+ *               lastName:
+ *                 type: string
+ *                 description: Last name of the requester
+ *                 example: "Doe"
+ *               email:
+ *                 type: string
+ *                 description: Email of the requester
+ *                 example: "john.doe@example.com"
+ *               priority:
+ *                 type: string
+ *                 enum: [Low, Medium, High]
+ *                 description: Priority level of the ticket
+ *                 example: "Medium"
+ *               status:
+ *                 type: string
+ *                 enum: [Open, In Progress, Resolved, Closed]
+ *                 description: Status of the ticket
+ *                 example: "Open"
+ *               notes:
+ *                 type: string
+ *                 description: Additional notes or description
+ *                 example: "Need access to AWS account"
+ *               ticket_category:
+ *                 type: string
+ *                 enum: [REQ-HR-ONBOARD, REQ-DEV-REPO, REQ-MARKETING-CRM, REQ-FIN-APP]
+ *                 description: Category of the ticket
+ *                 example: "REQ-DEV-REPO"
+ *               requested_resource:
+ *                 type: string
+ *                 description: Resource being requested
+ *                 example: "EC2 instance"
+ *               access_level:
+ *                 type: string
+ *                 enum: [Read, Write, Admin, Member]
+ *                 description: Access level for the requested resource
+ *                 example: "Read"
+ *               simba_id:
+ *                 type: string
+ *                 description: SIMBA ID of the ticket
+ *                 example: "SIMBA-0001"
  *     responses:
  *       200:
  *         description: ART form submitted successfully
