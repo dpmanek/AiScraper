@@ -4,6 +4,8 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
+const https = require('https');
 
 // Import MongoDB connection
 const connectDB = require('./db');
@@ -17,7 +19,21 @@ const analyzerRoutes = require('./routes/analyzer');
 const { swaggerUi, swaggerDocs } = require('./swagger');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const HTTP_PORT = process.env.HTTP_PORT || 5000;
+const HTTPS_PORT = process.env.HTTPS_PORT || 5001;
+
+// Check if SSL certificates exist
+let sslOptions;
+try {
+	sslOptions = {
+		key: fs.readFileSync(path.join(__dirname, 'ssl', 'privkey.pem')),
+		cert: fs.readFileSync(path.join(__dirname, 'ssl', 'fullchain.pem')),
+	};
+} catch (error) {
+	console.warn('SSL certificates not found. HTTPS server will not start.');
+	console.warn("You can generate certificates using Let's Encrypt certbot.");
+	sslOptions = null;
+}
 
 // Connect to MongoDB
 connectDB();
@@ -114,7 +130,32 @@ if (process.env.NODE_ENV === 'production') {
 
 // Moved all Cloudflare-related functions to analyzerController.js
 
-// Start the server
-app.listen(PORT, () => {
-	console.log(`Server running on port ${PORT}`);
+// Create HTTP server
+const httpServer = http.createServer(app);
+httpServer.listen(HTTP_PORT, () => {
+	console.log(`HTTP Server running on port ${HTTP_PORT}`);
 });
+
+// Create HTTPS server if SSL certificates are available
+if (sslOptions) {
+	// Create directory for SSL certificates if it doesn't exist
+	const sslDir = path.join(__dirname, 'ssl');
+	if (!fs.existsSync(sslDir)) {
+		fs.mkdirSync(sslDir, { recursive: true });
+	}
+
+	const httpsServer = https.createServer(sslOptions, app);
+	httpsServer.listen(HTTPS_PORT, () => {
+		console.log(`HTTPS Server running on port ${HTTPS_PORT}`);
+	});
+	console.log(
+		`To access the HTTPS server, go to https://your-domain:${HTTPS_PORT}`
+	);
+} else {
+	console.log('HTTPS Server not started due to missing SSL certificates');
+	console.log(
+		'To enable HTTPS, place SSL certificates in the "ssl" directory:'
+	);
+	console.log('  - privkey.pem: Private key file');
+	console.log('  - fullchain.pem: Certificate file');
+}
