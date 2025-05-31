@@ -21,6 +21,10 @@ const swaggerOptions = {
 		},
 		servers: [
 			{
+				url: 'http://184.72.168.62:5000',
+				description: 'Production server (EC2)',
+			},
+			{
 				url: 'http://localhost:5000',
 				description: 'Development server',
 			},

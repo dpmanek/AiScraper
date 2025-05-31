@@ -25,7 +25,17 @@ connectDB();
 // No longer need Google AI initialization since it's in analyzerController.js
 
 // Middleware
-app.use(cors());
+// Configure CORS to allow requests from CloudFront domain
+const corsOptions = {
+	origin: [
+		'https://d1v9dmgp4scf60.cloudfront.net',
+		'http://localhost:5173', // Keep local development working
+	],
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization'],
+	credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Configure multer for file uploads

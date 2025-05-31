@@ -13,9 +13,9 @@ exports.scrapeTicket = async (req, res) => {
 	try {
 		const simbaId = req.params.id;
 
-		// Construct the URL to scrape - use the frontend URL
-		// In development, the frontend runs on port 5173 (Vite default)
-		const frontendUrl = 'http://localhost:5173';
+		// Construct the URL to scrape - use the deployed frontend URL
+		const frontendUrl = 'https://d1v9dmgp4scf60.cloudfront.net';
+		//const frontendUrl = 'http://localhost:5173';
 		const ticketUrl = `${frontendUrl}/tickets/${simbaId}`;
 
 		// Launch the browser
