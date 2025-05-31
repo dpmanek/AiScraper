@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_BASE_URL } from '../../config';
 import '../../styles/SimbaForm.css';
 
 const SimbaForm = () => {
@@ -36,7 +37,7 @@ const SimbaForm = () => {
 		setSuccess(false);
 
 		try {
-			const response = await fetch('http://localhost:5000/api/tickets', {
+			const response = await fetch(`${API_BASE_URL}/api/tickets`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

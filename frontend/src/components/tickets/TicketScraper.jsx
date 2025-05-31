@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../config';
 import '../../styles/TicketScraper.css';
 
 const TicketScraper = () => {
@@ -15,7 +16,7 @@ const TicketScraper = () => {
 	useEffect(() => {
 		const fetchTicket = async () => {
 			try {
-				const response = await fetch(`http://localhost:5000/api/tickets/${id}`);
+				const response = await fetch(`${API_BASE_URL}/api/tickets/${id}`);
 
 				if (!response.ok) {
 					throw new Error('Failed to fetch ticket');
@@ -39,7 +40,7 @@ const TicketScraper = () => {
 		setScrapeError(null);
 
 		try {
-			const response = await fetch(`http://localhost:5000/api/scrape/${id}`, {
+			const response = await fetch(`${API_BASE_URL}/api/scrape/${id}`, {
 				method: 'POST',
 			});
 

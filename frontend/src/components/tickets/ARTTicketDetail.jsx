@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { API_BASE_URL } from '../../config';
 import '../../styles/TicketDetail.css';
 
 const ARTTicketDetail = () => {
@@ -13,7 +14,7 @@ const ARTTicketDetail = () => {
 			try {
 				// In a real application, this would fetch from an ART API endpoint
 				// For now, we'll use the same endpoint as SIMBA tickets and filter by art_id
-				const response = await fetch('http://localhost:5000/api/tickets');
+				const response = await fetch(`${API_BASE_URL}/api/tickets`);
 
 				if (!response.ok) {
 					throw new Error('Failed to fetch tickets');

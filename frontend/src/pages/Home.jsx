@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_BASE_URL } from '../config';
 import ImageUploader from '../components/ImageUploader';
 import UrlInput from '../components/UrlInput';
 import ResultDisplay from '../components/ResultDisplay';
@@ -37,8 +38,8 @@ const Home = () => {
 
 			// Call the appropriate endpoint
 			const endpoint = isOcr
-				? 'http://localhost:5000/api/analyze-text'
-				: 'http://localhost:5000/api/analyze-text';
+				? `${API_BASE_URL}/api/analyze-text`
+				: `${API_BASE_URL}/api/analyze-text`;
 
 			const response = await fetch(endpoint, {
 				method: 'POST',

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 import '../styles/ART.css';
 
 const ART = () => {
@@ -98,7 +99,7 @@ const ART = () => {
 
 			// Call the backend API to submit the ART form
 			const response = await fetch(
-				`http://localhost:5000/api/tickets/${formData.simba_id}/art`,
+				`${API_BASE_URL}/api/tickets/${formData.simba_id}/art`,
 				{
 					method: 'POST',
 					headers: {

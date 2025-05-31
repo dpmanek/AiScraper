@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { API_BASE_URL } from '../config';
 
 const ImageUploader = ({ onProcessComplete }) => {
 	const [file, setFile] = useState(null);
@@ -80,7 +81,7 @@ const ImageUploader = ({ onProcessComplete }) => {
 			formData.append('image', file);
 			// No provider selection here - it will be selected after extraction
 
-			const response = await fetch('http://localhost:5000/api/process-image', {
+			const response = await fetch(`${API_BASE_URL}/api/process-image`, {
 				method: 'POST',
 				body: formData,
 			});

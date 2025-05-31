@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../../config';
 import '../../styles/TicketList.css';
 
 const TicketList = () => {
@@ -10,7 +11,7 @@ const TicketList = () => {
 
 	const fetchTickets = async () => {
 		try {
-			const response = await fetch('http://localhost:5000/api/tickets');
+			const response = await fetch(`${API_BASE_URL}/api/tickets`);
 
 			if (!response.ok) {
 				throw new Error('Failed to fetch tickets');
@@ -33,12 +34,9 @@ const TicketList = () => {
 		if (window.confirm('Are you sure you want to delete this ticket?')) {
 			try {
 				setDeleteError(null);
-				const response = await fetch(
-					`http://localhost:5000/api/tickets/${id}`,
-					{
-						method: 'DELETE',
-					}
-				);
+				const response = await fetch(`${API_BASE_URL}/api/tickets/${id}`, {
+					method: 'DELETE',
+				});
 
 				if (!response.ok) {
 					throw new Error('Failed to delete ticket');

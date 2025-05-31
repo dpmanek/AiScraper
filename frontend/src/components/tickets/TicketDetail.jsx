@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../config';
 import '../../styles/TicketDetail.css';
 
 const TicketDetail = () => {
@@ -18,7 +19,7 @@ const TicketDetail = () => {
 	useEffect(() => {
 		const fetchTicket = async () => {
 			try {
-				const response = await fetch(`http://localhost:5000/api/tickets/${id}`);
+				const response = await fetch(`${API_BASE_URL}/api/tickets/${id}`);
 
 				if (!response.ok) {
 					throw new Error('Failed to fetch ticket');
@@ -46,7 +47,7 @@ const TicketDetail = () => {
 
 		try {
 			// Always scrape fresh data
-			const url = `http://localhost:5000/api/scrape/${id}`;
+			const url = `${API_BASE_URL}/api/scrape/${id}`;
 
 			const response = await fetch(url, {
 				method: 'POST',
@@ -77,12 +78,9 @@ const TicketDetail = () => {
 	const handleDelete = async () => {
 		if (window.confirm('Are you sure you want to delete this ticket?')) {
 			try {
-				const response = await fetch(
-					`http://localhost:5000/api/tickets/${id}`,
-					{
-						method: 'DELETE',
-					}
-				);
+				const response = await fetch(`${API_BASE_URL}/api/tickets/${id}`, {
+					method: 'DELETE',
+				});
 
 				if (!response.ok) {
 					throw new Error('Failed to delete ticket');

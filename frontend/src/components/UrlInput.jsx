@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_BASE_URL } from '../config';
 
 const UrlInput = ({ onProcessComplete }) => {
 	const [url, setUrl] = useState('');
@@ -44,7 +45,7 @@ const UrlInput = ({ onProcessComplete }) => {
 		setError(null);
 
 		try {
-			const response = await fetch('http://localhost:5000/api/scrape-url', {
+			const response = await fetch(`${API_BASE_URL}/api/scrape-url`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
