@@ -15,7 +15,8 @@ exports.scrapeTicket = async (req, res) => {
 
 		// Construct the URL to scrape - use the deployed frontend URL
 		const frontendUrl = 'https://d1v9dmgp4scf60.cloudfront.net';
-		//const frontendUrl = 'http://localhost:5173';
+		// For local development:
+		// const frontendUrl = 'http://localhost:5173';
 		const ticketUrl = `${frontendUrl}/tickets/${simbaId}`;
 
 		// Launch the browser

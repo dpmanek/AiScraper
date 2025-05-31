@@ -25,9 +25,35 @@ connectDB();
 // No longer need Google AI initialization since it's in analyzerController.js
 
 // Middleware
-// Configure CORS to allow all requests (more permissive)
-app.use(cors());
+// Configure CORS with specific options to handle preflight requests properly
+const corsOptions = {
+	origin: [
+		'http://localhost:5173',
+		'https://d1v9dmgp4scf60.cloudfront.net',
+		// Allow both with and without www
+		'https://www.d1v9dmgp4scf60.cloudfront.net',
+	],
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+	allowedHeaders: [
+		'Content-Type',
+		'Authorization',
+		'X-Requested-With',
+		'Accept',
+	],
+	credentials: true,
+	preflightContinue: false,
+	optionsSuccessStatus: 204,
+	maxAge: 86400, // 24 hours
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+
+// Trust proxy headers from CloudFront
+app.set('trust proxy', true);
+
+// Add a specific handler for OPTIONS requests
+app.options('*', cors(corsOptions));
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
