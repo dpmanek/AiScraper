@@ -48,6 +48,10 @@ const corsOptions = {
 		'https://d1v9dmgp4scf60.cloudfront.net',
 		// Allow both with and without www
 		'https://www.d1v9dmgp4scf60.cloudfront.net',
+		// Allow S3 website endpoint
+		'http://aiscraper-frontend.s3-website-us-east-1.amazonaws.com',
+		// Allow CloudFront distribution for frontend
+		'https://d1v9dmgp4scf60.cloudfront.net',
 	],
 	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
 	allowedHeaders: [
