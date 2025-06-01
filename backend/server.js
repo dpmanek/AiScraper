@@ -14,6 +14,7 @@ const connectDB = require('./db');
 const ticketRoutes = require('./routes/tickets');
 const scraperRoutes = require('./routes/scraper');
 const analyzerRoutes = require('./routes/analyzer');
+const testRoutes = require('./routes/test');
 
 // Import Swagger configuration
 const { swaggerUi, swaggerDocs } = require('./swagger');
@@ -120,6 +121,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api/tickets', ticketRoutes);
 app.use('/api', scraperRoutes);
 app.use('/api', analyzerRoutes);
+app.use('/api/test', testRoutes);
 
 // Serve static files for ticket pages in production
 // This will be useful when we deploy the application
