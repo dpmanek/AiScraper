@@ -85,7 +85,15 @@ exports.createTicket = async (req, res) => {
 // @access  Public
 exports.getTickets = async (req, res) => {
 	try {
-		const tickets = await Ticket.find().sort({ createdAt: -1 });
+		console.log('Getting tickets - starting database query');
+
+		// Add a timeout to the query
+		const tickets = await Ticket.find()
+			.sort({ createdAt: -1 })
+			.maxTimeMS(10000) // 10 second timeout
+			.limit(100); // Limit to 100 tickets for performance
+
+		console.log(`Found ${tickets.length} tickets`);
 
 		res.status(200).json({
 			success: true,
@@ -94,9 +102,32 @@ exports.getTickets = async (req, res) => {
 		});
 	} catch (error) {
 		console.error('Error getting tickets:', error);
+		console.error('Error details:', error.message);
+
+		// Check for specific MongoDB errors
+		if (error.name === 'MongooseError' || error.name === 'MongoError') {
+			console.error('MongoDB connection error:', error.message);
+			return res.status(503).json({
+				success: false,
+				error: 'Database connection error',
+				details: error.message,
+			});
+		}
+
+		// Check for timeout errors
+		if (error.message && error.message.includes('timed out')) {
+			console.error('Query timed out:', error.message);
+			return res.status(504).json({
+				success: false,
+				error: 'Database query timed out',
+				details: error.message,
+			});
+		}
+
 		res.status(500).json({
 			success: false,
 			error: 'Server Error',
+			details: error.message,
 		});
 	}
 };
