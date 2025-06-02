@@ -230,10 +230,8 @@ ticketSchema.pre('save', function (next) {
 
 // Drop all indexes and recreate only the ones we need
 ticketSchema.index({ simba_id: 1 }, { unique: true });
-ticketSchema.index(
-	{ art_id: 1 },
-	{ unique: true, sparse: true, background: true }
-);
+// Remove unique constraint from art_id index to allow multiple null values
+ticketSchema.index({ art_id: 1 }, { sparse: true, background: true });
 
 // Add a pre-init hook to drop any existing ticketId index
 ticketSchema.pre('init', function () {
