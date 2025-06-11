@@ -12,9 +12,9 @@ const ART = () => {
 		title: '',
 		firstName: '',
 		lastName: '',
-		email: '',
+		user_id: '',
 		priority: 'Medium',
-		status: 'Open',
+		art_status: 'InProgress',
 		notes: '',
 		// New fields
 		ticket_category: 'REQ-HR-ONBOARD',
@@ -39,20 +39,14 @@ const ART = () => {
 			let firstName = '';
 			let lastName = '';
 
-			if (scrapedData.requesterName) {
-				const nameParts = scrapedData.requesterName.split(' ');
-				firstName = nameParts[0] || '';
-				lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
-			}
-
 			// Map ticket data to form fields
 			const mappedData = {
 				title: scrapedData.title || '',
-				firstName: firstName,
-				lastName: lastName,
-				email: scrapedData.requesterEmail || '',
+				firstName: scrapedData.firstName || firstName,
+				lastName: scrapedData.lastName || lastName,
+				user_id: scrapedData.user_id || '',
 				priority: scrapedData.priority || 'Medium',
-				status: scrapedData.status || 'Open',
+				art_status: scrapedData.art_status || 'InProgress',
 				notes: scrapedData.description || '',
 				// New fields
 				ticket_category: scrapedData.ticket_category || 'REQ-HR-ONBOARD',
@@ -192,15 +186,15 @@ const ART = () => {
 					</div>
 
 					<div className="form-group">
-						<label htmlFor="email">Email</label>
+						<label htmlFor="user_id">Email/User ID</label>
 						<input
 							type="email"
-							id="email"
-							name="email"
-							value={formData.email}
+							id="user_id"
+							name="user_id"
+							value={formData.user_id}
 							onChange={handleInputChange}
 							required
-							className={autoFilled && formData.email ? 'autofilled' : ''}
+							className={autoFilled && formData.user_id ? 'autofilled' : ''}
 						/>
 					</div>
 				</div>
@@ -304,14 +298,16 @@ const ART = () => {
 						</div>
 
 						<div className="form-group">
-							<label htmlFor="status">Status</label>
+							<label htmlFor="art_status">ART Status</label>
 							<input
 								type="text"
-								id="status"
-								name="status"
-								value={formData.status}
+								id="art_status"
+								name="art_status"
+								value={formData.art_status}
 								readOnly
-								className={autoFilled && formData.status ? 'autofilled' : ''}
+								className={
+									autoFilled && formData.art_status ? 'autofilled' : ''
+								}
 							/>
 							<p className="field-note">Only IAM can update this field</p>
 						</div>

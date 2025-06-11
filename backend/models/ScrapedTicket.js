@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 // Define the Error Schema
 const ErrorSchema = new mongoose.Schema(
 	{
-		code: { type: String, required: true },
-		message: { type: String, required: true },
+		code: { type: String, required: false, default: 'NO_ERROR' },
+		message: { type: String, required: false, default: 'No error' },
 	},
 	{ _id: false }
 );
@@ -15,7 +15,7 @@ const ApproverSchema = new mongoose.Schema(
 		approver_id: { type: String, required: true },
 		first_name: { type: String, required: true },
 		last_name: { type: String, required: true },
-		approval_for: { type: [String], default: ['SIMBA'] },
+		approval_for: { type: String, default: 'Simba' },
 	},
 	{ _id: false }
 );
@@ -42,9 +42,10 @@ const scrapedTicketSchema = new mongoose.Schema(
 			title: String,
 			description: String,
 			priority: String,
-			category: String,
-			requesterName: String,
-			requesterEmail: String,
+			// User information fields
+			firstName: String,
+			lastName: String,
+			user_id: String,
 			status: String,
 
 			// New fields based on requirements

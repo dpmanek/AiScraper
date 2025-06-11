@@ -115,10 +115,10 @@ const ARTTicketDetail = () => {
 						</span>
 						<span
 							className={`status-badge ${getStatusClass(
-								ticket.status
+								ticket.art_status
 							)} ticket-status`}
 						>
-							{ticket.status}
+							{ticket.art_status}
 						</span>
 					</div>
 				</div>
@@ -182,15 +182,26 @@ const ARTTicketDetail = () => {
 					<h3>Requester Information</h3>
 					<div className="detail-grid">
 						<div className="detail-item">
-							<span className="detail-label">Name:</span>
-							<span className="detail-value ticket-requester-name">
-								{ticket.requesterName}
+							<span className="detail-label">First Name:</span>
+							<span className="detail-value ticket-first-name">
+								{ticket.firstName ||
+									ticket.requesterName?.split(' ')[0] ||
+									'N/A'}
 							</span>
 						</div>
 						<div className="detail-item">
-							<span className="detail-label">Email:</span>
-							<span className="detail-value ticket-requester-email">
-								{ticket.requesterEmail}
+							<span className="detail-label">Last Name:</span>
+							<span className="detail-value ticket-last-name">
+								{ticket.lastName ||
+									(ticket.requesterName?.split(' ').length > 1
+										? ticket.requesterName.split(' ').slice(1).join(' ')
+										: 'N/A')}
+							</span>
+						</div>
+						<div className="detail-item">
+							<span className="detail-label">User ID:</span>
+							<span className="detail-value ticket-user-id">
+								{ticket.user_id || ticket.requesterEmail || 'N/A'}
 							</span>
 						</div>
 					</div>
@@ -238,25 +249,27 @@ const ARTTicketDetail = () => {
 					</div>
 				</div>
 
-				{ticket.error_details && ticket.error_details.code !== 'NO_ERROR' && (
-					<div className="ticket-section error-section">
-						<h3>Error Details</h3>
-						<div className="detail-grid">
-							<div className="detail-item">
-								<span className="detail-label">Error Code:</span>
-								<span className="detail-value ticket-error-code">
-									{ticket.error_details.code}
-								</span>
-							</div>
-							<div className="detail-item">
-								<span className="detail-label">Error Message:</span>
-								<span className="detail-value ticket-error-message">
-									{ticket.error_details.message}
-								</span>
+				{ticket.error_details &&
+					ticket.error_details.code &&
+					ticket.error_details.code !== 'NO_ERROR' && (
+						<div className="ticket-section error-section">
+							<h3>Error Details</h3>
+							<div className="detail-grid">
+								<div className="detail-item">
+									<span className="detail-label">Error Code:</span>
+									<span className="detail-value ticket-error-code">
+										{ticket.error_details.code}
+									</span>
+								</div>
+								<div className="detail-item">
+									<span className="detail-label">Error Message:</span>
+									<span className="detail-value ticket-error-message">
+										{ticket.error_details.message}
+									</span>
+								</div>
 							</div>
 						</div>
-					</div>
-				)}
+					)}
 
 				{ticket.workflow_state && ticket.workflow_state.length > 0 && (
 					<div className="ticket-section">

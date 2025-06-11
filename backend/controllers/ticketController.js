@@ -1,4 +1,5 @@
 const Ticket = require('../models/Ticket');
+const { processSimbaTicket } = require('../utils/bedrockAgent');
 
 // @desc    Create a new ticket
 // @route   POST /api/tickets
@@ -9,10 +10,9 @@ exports.createTicket = async (req, res) => {
 			title,
 			description,
 			priority,
-			category,
-			requesterName,
-			requesterEmail,
-			// New fields
+			firstName,
+			lastName,
+			user_id,
 			ticket_category,
 			requested_resource,
 			access_level,
@@ -22,10 +22,9 @@ exports.createTicket = async (req, res) => {
 		// Generate a unique SIMBA ID
 		const simbaId = await Ticket.generateSimbaId();
 
-		// Split requesterName into first and last name for approver
-		const nameParts = requesterName ? requesterName.split(' ') : ['', ''];
-		const firstName = nameParts[0] || '';
-		const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+		// Use the provided firstName and lastName
+		const firstNameToUse = firstName;
+		const lastNameToUse = lastName;
 
 		// Create the ticket with all fields
 		const ticket = await Ticket.create({
@@ -33,10 +32,10 @@ exports.createTicket = async (req, res) => {
 			title,
 			description,
 			priority,
-			// category field removed as it's redundant with ticket_category
-			requesterName,
-			requesterEmail,
-			status: 'Open', // Always set to 'Open' for new tickets
+			// User information fields
+			firstName: firstNameToUse,
+			lastName: lastNameToUse,
+			user_id: user_id,
 
 			// New fields
 			ticket_category: ticket_category || undefined,
@@ -51,9 +50,9 @@ exports.createTicket = async (req, res) => {
 			// Set approver with requester's name if available
 			approver: {
 				approver_id: 'approver-001',
-				first_name: firstName || 'Jane',
-				last_name: lastName || 'Smith',
-				approval_for: ['SIMBA'],
+				first_name: firstNameToUse || 'Jane',
+				last_name: lastNameToUse || 'Smith',
+				approval_for: 'Simba',
 			},
 
 			// These will use the default values from the schema
@@ -63,9 +62,30 @@ exports.createTicket = async (req, res) => {
 			art_status: null, // Will be set when ART form is submitted
 			provisioning_outcome: 'None',
 			remediation_needed: 'None',
-			error_details: null,
+			error_details: {
+				code: 'NO_ERROR',
+				message: 'No error',
+			},
 			workflow_state: undefined, // Will use the default function
 		});
+
+		// Trigger the Bedrock agent to process the ticket
+		try {
+			console.log(`Triggering Bedrock agent for SIMBA ID: ${simbaId}`);
+
+			// Process the ticket with Bedrock agent asynchronously
+			// We don't await this to avoid blocking the response
+			processSimbaTicket(simbaId)
+				.then((result) => {
+					console.log('Bedrock agent processing completed successfully');
+				})
+				.catch((err) => {
+					console.error('Error in Bedrock agent processing:', err.message);
+				});
+		} catch (bedrockError) {
+			// Log the error but don't fail the ticket creation
+			console.error('Error triggering Bedrock agent:', bedrockError.message);
+		}
 
 		res.status(201).json({
 			success: true,
@@ -240,9 +260,9 @@ exports.submitArtForm = async (req, res) => {
 		}
 
 		// Generate a random ART ID
-		const artId = `ART-${Math.floor(Math.random() * 10000)
+		const artId = `ART-REQ-${Math.floor(Math.random() * 100000)
 			.toString()
-			.padStart(4, '0')}`;
+			.padStart(5, '0')}`;
 
 		// Update the ticket with ART-related fields
 		ticket.art_id = artId;

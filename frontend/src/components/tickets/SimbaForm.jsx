@@ -7,9 +7,9 @@ const SimbaForm = () => {
 		title: '',
 		description: '',
 		priority: 'Medium',
-		category: '',
-		requesterName: '',
-		requesterEmail: '',
+		firstName: '',
+		lastName: '',
+		user_id: '',
 		// New fields
 		ticket_category: 'REQ-HR-ONBOARD',
 		requested_resource: '',
@@ -20,7 +20,7 @@ const SimbaForm = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const [success, setSuccess] = useState(false);
-	const [ticketId, setTicketId] = useState(null);
+	const [simbaId, setSimbaId] = useState(null);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -52,14 +52,14 @@ const SimbaForm = () => {
 			}
 
 			setSuccess(true);
-			setTicketId(data.data.ticketId);
+			setSimbaId(data.data.simba_id);
 			setFormData({
 				title: '',
 				description: '',
 				priority: 'Medium',
-				category: '',
-				requesterName: '',
-				requesterEmail: '',
+				firstName: '',
+				lastName: '',
+				user_id: '',
 				ticket_category: 'REQ-HR-ONBOARD',
 				requested_resource: '',
 			});
@@ -81,7 +81,7 @@ const SimbaForm = () => {
 
 			{success && (
 				<div className="success-message">
-					Ticket created successfully! Ticket ID: {ticketId}
+					Ticket created successfully! SIMBA ID: {simbaId}
 				</div>
 			)}
 
@@ -161,25 +161,40 @@ const SimbaForm = () => {
 
 				<div className="form-row">
 					<div className="form-group">
-						<label htmlFor="requesterName">Your Name *</label>
+						<label htmlFor="firstName">First Name *</label>
 						<input
 							type="text"
-							id="requesterName"
-							name="requesterName"
-							value={formData.requesterName}
+							id="firstName"
+							name="firstName"
+							value={formData.firstName}
 							onChange={handleChange}
 							required
-							placeholder="Your full name"
+							placeholder="Your first name"
 						/>
 					</div>
 
 					<div className="form-group">
-						<label htmlFor="requesterEmail">Your Email *</label>
+						<label htmlFor="lastName">Last Name *</label>
+						<input
+							type="text"
+							id="lastName"
+							name="lastName"
+							value={formData.lastName}
+							onChange={handleChange}
+							required
+							placeholder="Your last name"
+						/>
+					</div>
+				</div>
+
+				<div className="form-row">
+					<div className="form-group">
+						<label htmlFor="user_id">Email/User ID *</label>
 						<input
 							type="email"
-							id="requesterEmail"
-							name="requesterEmail"
-							value={formData.requesterEmail}
+							id="user_id"
+							name="user_id"
+							value={formData.user_id}
 							onChange={handleChange}
 							required
 							placeholder="Your email address"

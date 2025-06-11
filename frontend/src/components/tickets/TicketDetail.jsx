@@ -169,10 +169,10 @@ const TicketDetail = () => {
 						</span>
 						<span
 							className={`status-badge ${getStatusClass(
-								ticket.status
+								ticket.simba_status
 							)} ticket-status`}
 						>
-							{ticket.status}
+							{ticket.simba_status}
 						</span>
 					</div>
 				</div>
@@ -262,15 +262,26 @@ const TicketDetail = () => {
 					<h3>Requester Information</h3>
 					<div className="detail-grid">
 						<div className="detail-item">
-							<span className="detail-label">Name:</span>
-							<span className="detail-value ticket-requester-name">
-								{ticket.requesterName}
+							<span className="detail-label">First Name:</span>
+							<span className="detail-value ticket-first-name">
+								{ticket.firstName ||
+									ticket.requesterName?.split(' ')[0] ||
+									'N/A'}
 							</span>
 						</div>
 						<div className="detail-item">
-							<span className="detail-label">Email:</span>
-							<span className="detail-value ticket-requester-email">
-								{ticket.requesterEmail}
+							<span className="detail-label">Last Name:</span>
+							<span className="detail-value ticket-last-name">
+								{ticket.lastName ||
+									(ticket.requesterName?.split(' ').length > 1
+										? ticket.requesterName.split(' ').slice(1).join(' ')
+										: 'N/A')}
+							</span>
+						</div>
+						<div className="detail-item">
+							<span className="detail-label">User ID:</span>
+							<span className="detail-value ticket-user-id">
+								{ticket.user_id || ticket.requesterEmail || 'N/A'}
 							</span>
 						</div>
 					</div>

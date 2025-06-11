@@ -139,7 +139,6 @@ const TicketList = () => {
 							<th>Title</th>
 							<th>Request Type</th>
 							<th>Priority</th>
-							<th>Status</th>
 							<th>SIMBA Status</th>
 							<th>Created</th>
 							<th>Actions</th>
@@ -162,14 +161,11 @@ const TicketList = () => {
 								</td>
 								<td>
 									<span
-										className={`status-badge ${getStatusClass(ticket.status)}`}
+										className={`status-badge ${getStatusClass(
+											ticket.simba_status
+										)}`}
 									>
-										{ticket.status}
-									</span>
-								</td>
-								<td>
-									<span className="simba-status">
-										{ticket.simba_status || 'N/A'}
+										{ticket.simba_status}
 									</span>
 								</td>
 								<td>{new Date(ticket.createdAt).toLocaleDateString()}</td>

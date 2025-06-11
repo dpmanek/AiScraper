@@ -143,7 +143,6 @@ const ARTTicketList = () => {
 							<th>Title</th>
 							<th>Request Type</th>
 							<th>Priority</th>
-							<th>Status</th>
 							<th>ART Status</th>
 							<th>Created</th>
 							<th>Actions</th>
@@ -166,14 +165,11 @@ const ARTTicketList = () => {
 								</td>
 								<td>
 									<span
-										className={`status-badge ${getStatusClass(ticket.status)}`}
+										className={`status-badge ${getStatusClass(
+											ticket.art_status
+										)}`}
 									>
-										{ticket.status}
-									</span>
-								</td>
-								<td>
-									<span className="art-status">
-										{ticket.art_status || 'N/A'}
+										{ticket.art_status}
 									</span>
 								</td>
 								<td>{new Date(ticket.createdAt).toLocaleDateString()}</td>

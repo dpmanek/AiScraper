@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 // Define the Error Schema
 const ErrorSchema = new mongoose.Schema(
 	{
-		code: { type: String, required: true },
-		message: { type: String, required: true },
+		code: { type: String, required: false, default: 'NO_ERROR' },
+		message: { type: String, required: false, default: 'No error' },
 	},
 	{ _id: false }
 ); // _id: false prevents automatic _id for nested schema
@@ -15,7 +15,7 @@ const ApproverSchema = new mongoose.Schema(
 		approver_id: { type: String, required: true },
 		first_name: { type: String, required: true },
 		last_name: { type: String, required: true },
-		approval_for: { type: [String], default: ['SIMBA'] },
+		approval_for: { type: String, default: 'Simba' },
 	},
 	{ _id: false }
 );
@@ -85,16 +85,16 @@ const ticketSchema = new mongoose.Schema(
 				approver_id: 'approver-001',
 				first_name: 'Jane',
 				last_name: 'Smith',
-				approval_for: ['SIMBA'],
+				approval_for: 'Simba',
 			}),
 		},
 		simba_id: {
 			type: String,
 			required: true,
 			default: function () {
-				return `SIMBA-${Math.floor(Math.random() * 10000)
+				return `SIMBA-REQ-${Math.floor(Math.random() * 100000)
 					.toString()
-					.padStart(4, '0')}`;
+					.padStart(5, '0')}`;
 			},
 		},
 		simba_status: {
@@ -114,6 +114,7 @@ const ticketSchema = new mongoose.Schema(
 		art_id: {
 			type: String,
 			default: null,
+			// When set, will follow the format ART-REQ-XXXXX
 		},
 		art_status: {
 			type: String,
@@ -144,7 +145,10 @@ const ticketSchema = new mongoose.Schema(
 		},
 		error_details: {
 			type: ErrorSchema,
-			default: null,
+			default: () => ({
+				code: 'NO_ERROR',
+				message: 'No error',
+			}),
 		},
 		workflow_state: {
 			type: [WorkflowStateSchema],
@@ -161,22 +165,22 @@ const ticketSchema = new mongoose.Schema(
 				];
 			},
 		},
-		// Original fields (category removed as it's redundant with ticket_category)
-		requesterName: {
+		// User information fields
+		firstName: {
 			type: String,
 			required: true,
 			trim: true,
 		},
-		requesterEmail: {
+		lastName: {
+			type: String,
+			required: true,
+			trim: true,
+		},
+		user_id: {
 			type: String,
 			required: true,
 			trim: true,
 			lowercase: true,
-		},
-		status: {
-			type: String,
-			enum: ['Open', 'In Progress', 'Resolved', 'Closed'],
-			default: 'Open',
 		},
 		createdAt: {
 			type: Date,
@@ -185,13 +189,6 @@ const ticketSchema = new mongoose.Schema(
 		updatedAt: {
 			type: Date,
 			default: Date.now,
-		},
-		// Add ticketId field to fix duplicate key error
-		ticketId: {
-			type: Number,
-			default: function () {
-				return Math.floor(Math.random() * 1000000);
-			},
 		},
 	},
 	{
@@ -205,7 +202,7 @@ ticketSchema.statics.generateSimbaId = async function () {
 		// Get the count of all tickets and add 1 to create a new ID
 		// Use a timeout of 15 seconds for this operation
 		const count = await this.countDocuments().maxTimeMS(15000);
-		const newId = `SIMBA-${(count + 1).toString().padStart(4, '0')}`;
+		const newId = `SIMBA-REQ-${(count + 1).toString().padStart(5, '0')}`;
 		return newId;
 	} catch (error) {
 		console.error('Error generating SIMBA ID:', error);
@@ -214,7 +211,7 @@ ticketSchema.statics.generateSimbaId = async function () {
 		const randomSuffix = Math.floor(Math.random() * 1000)
 			.toString()
 			.padStart(3, '0');
-		return `SIMBA-${timestamp.toString().slice(-4)}-${randomSuffix}`;
+		return `SIMBA-REQ-${timestamp.toString().slice(-5)}-${randomSuffix}`;
 	}
 };
 
@@ -233,12 +230,20 @@ ticketSchema.index({ simba_id: 1 }, { unique: true });
 // Remove unique constraint from art_id index to allow multiple null values
 ticketSchema.index({ art_id: 1 }, { sparse: true, background: true });
 
-// Add a pre-init hook to drop any existing ticketId index
+// Add a pre-init hook to drop any existing old indexes
 ticketSchema.pre('init', function () {
 	const collection = this.collection;
-	collection.dropIndex('ticketId_1', function (err) {
+	collection.dropIndex('simba_id_1', function (err) {
 		// Ignore errors if the index doesn't exist
-		console.log('Dropped ticketId_1 index if it existed');
+		console.log('Dropped simba_id_1 index if it existed');
+	});
+	collection.dropIndex('art_id_1', function (err) {
+		// Ignore errors if the index doesn't exist
+		console.log('Dropped art_id_1 index if it existed');
+	});
+	collection.dropIndex('user_id_1', function (err) {
+		// Ignore errors if the index doesn't exist
+		console.log('Dropped user_id_1 index if it existed');
 	});
 });
 

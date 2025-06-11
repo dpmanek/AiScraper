@@ -77,7 +77,7 @@ const TicketScraper = () => {
 	return (
 		<div className="ticket-scraper-container">
 			<div className="scraper-header">
-				<h2>Scrape Ticket: {ticket.ticketId}</h2>
+				<h2>Scrape Ticket: {ticket.simba_id}</h2>
 				<div className="header-actions">
 					<Link to={`/tickets/${id}`} className="back-button">
 						Back to Ticket
@@ -111,21 +111,21 @@ const TicketScraper = () => {
 							<p className="preview-value">{ticket.description}</p>
 						</div>
 						<div className="preview-item">
-							<span className="preview-label">Category:</span>
-							<span className="preview-value">{ticket.category}</span>
+							<span className="preview-label">Request Type:</span>
+							<span className="preview-value">{ticket.ticket_category}</span>
 						</div>
 						<div className="preview-item">
 							<span className="preview-label">Priority:</span>
 							<span className="preview-value">{ticket.priority}</span>
 						</div>
 						<div className="preview-item">
-							<span className="preview-label">Status:</span>
-							<span className="preview-value">{ticket.status}</span>
+							<span className="preview-label">SIMBA Status:</span>
+							<span className="preview-value">{ticket.simba_status}</span>
 						</div>
 						<div className="preview-item">
 							<span className="preview-label">Requester:</span>
 							<span className="preview-value">
-								{ticket.requesterName} ({ticket.requesterEmail})
+								{ticket.firstName} {ticket.lastName} ({ticket.user_id})
 							</span>
 						</div>
 					</div>
