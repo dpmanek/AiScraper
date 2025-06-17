@@ -1,5 +1,9 @@
 const Ticket = require('../models/Ticket');
-const { processSimbaTicket } = require('../utils/bedrockAgent');
+const {
+	processSimbaTicket,
+	getTraceData,
+	markTicketAsBedrockEnabled,
+} = require('../utils/bedrockAgent');
 
 // @desc    Create a new ticket
 // @route   POST /api/tickets
@@ -69,22 +73,31 @@ exports.createTicket = async (req, res) => {
 			workflow_state: undefined, // Will use the default function
 		});
 
-		// Trigger the Bedrock agent to process the ticket
-		try {
-			console.log(`Triggering Bedrock agent for SIMBA ID: ${simbaId}`);
+		// Conditionally trigger the Bedrock agent based on enableBedrock flag
+		if (req.body.enableBedrock) {
+			try {
+				console.log(`Triggering Bedrock agent for SIMBA ID: ${simbaId}`);
 
-			// Process the ticket with Bedrock agent asynchronously
-			// We don't await this to avoid blocking the response
-			processSimbaTicket(simbaId)
-				.then((result) => {
-					console.log('Bedrock agent processing completed successfully');
-				})
-				.catch((err) => {
-					console.error('Error in Bedrock agent processing:', err.message);
-				});
-		} catch (bedrockError) {
-			// Log the error but don't fail the ticket creation
-			console.error('Error triggering Bedrock agent:', bedrockError.message);
+				// Mark this ticket as having Bedrock enabled
+				markTicketAsBedrockEnabled(simbaId);
+
+				// Process the ticket with Bedrock agent asynchronously
+				// We don't await this to avoid blocking the response
+				processSimbaTicket(simbaId)
+					.then((result) => {
+						console.log('Bedrock agent processing completed successfully');
+					})
+					.catch((err) => {
+						console.error('Error in Bedrock agent processing:', err.message);
+					});
+			} catch (bedrockError) {
+				// Log the error but don't fail the ticket creation
+				console.error('Error triggering Bedrock agent:', bedrockError.message);
+			}
+		} else {
+			console.log(
+				`Bedrock agent disabled for SIMBA ID: ${simbaId} - manual processing required`
+			);
 		}
 
 		res.status(201).json({
@@ -281,6 +294,46 @@ exports.submitArtForm = async (req, res) => {
 		});
 	} catch (error) {
 		console.error('Error submitting ART form:', error);
+		res.status(500).json({
+			success: false,
+			error: 'Server Error',
+		});
+	}
+};
+
+// @desc    Get trace data for a ticket
+// @route   GET /api/tickets/:id/trace
+// @access  Public
+exports.getTicketTrace = async (req, res) => {
+	try {
+		const ticket = await Ticket.findOne({ simba_id: req.params.id });
+
+		if (!ticket) {
+			return res.status(404).json({
+				success: false,
+				error: 'Ticket not found',
+			});
+		}
+
+		// Use the SIMBA ID as session ID and pass ticket data to determine initial state
+		const sessionId = req.params.id;
+		const traceData = getTraceData(sessionId, ticket);
+
+		// If no trace data (Bedrock was disabled), return appropriate response
+		if (!traceData) {
+			return res.status(200).json({
+				success: true,
+				data: null,
+				message: 'Bedrock automation was disabled for this ticket',
+			});
+		}
+
+		res.status(200).json({
+			success: true,
+			data: traceData,
+		});
+	} catch (error) {
+		console.error('Error getting trace data:', error);
 		res.status(500).json({
 			success: false,
 			error: 'Server Error',

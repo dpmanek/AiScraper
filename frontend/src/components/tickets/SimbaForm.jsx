@@ -21,6 +21,7 @@ const SimbaForm = () => {
 	const [error, setError] = useState(null);
 	const [success, setSuccess] = useState(false);
 	const [simbaId, setSimbaId] = useState(null);
+	const [enableBedrock, setEnableBedrock] = useState(false);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -42,7 +43,10 @@ const SimbaForm = () => {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify(formData),
+				body: JSON.stringify({
+					...formData,
+					enableBedrock: enableBedrock,
+				}),
 			});
 
 			const data = await response.json();
@@ -199,6 +203,78 @@ const SimbaForm = () => {
 							required
 							placeholder="Your email address"
 						/>
+					</div>
+				</div>
+
+				{/* Bedrock Agent Toggle */}
+				<div className="form-row">
+					<div className="form-group bedrock-toggle">
+						<label
+							className="toggle-label"
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								gap: '1rem',
+								cursor: 'pointer',
+							}}
+						>
+							<input
+								type="checkbox"
+								checked={enableBedrock}
+								onChange={(e) => setEnableBedrock(e.target.checked)}
+								className="toggle-checkbox"
+								style={{ display: 'none' }}
+							/>
+							<span
+								className="toggle-slider"
+								style={{
+									position: 'relative',
+									width: '50px',
+									height: '26px',
+									backgroundColor: enableBedrock ? '#27ae60' : '#ccc',
+									borderRadius: '26px',
+									transition: 'background-color 0.3s',
+									flexShrink: 0,
+								}}
+							>
+								<span
+									style={{
+										content: '',
+										position: 'absolute',
+										top: '3px',
+										left: enableBedrock ? '27px' : '3px',
+										width: '20px',
+										height: '20px',
+										backgroundColor: 'white',
+										borderRadius: '50%',
+										transition: 'left 0.3s',
+										boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
+									}}
+								></span>
+							</span>
+							<span className="toggle-text">
+								<span
+									style={{
+										fontWeight: '600',
+										color: '#34495e',
+										fontSize: '1rem',
+									}}
+								>
+									Enable Bedrock Agent Automation
+								</span>
+								<small
+									className="toggle-description"
+									style={{
+										color: '#7f8c8d',
+										fontSize: '0.85rem',
+										fontWeight: 'normal',
+										lineHeight: '1.4',
+									}}
+								>
+									Automatically process ART ticket creation using AI agents
+								</small>
+							</span>
+						</label>
 					</div>
 				</div>
 

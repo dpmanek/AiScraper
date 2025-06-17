@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../config';
+import BedrockFlowVisualizer from '../BedrockFlowVisualizer';
 import '../../styles/TicketDetail.css';
 
 const TicketDetail = () => {
@@ -216,6 +217,9 @@ const TicketDetail = () => {
 					</button>
 				</div>
 			)}
+
+			{/* Bedrock Agent Flow Visualization */}
+			<BedrockFlowVisualizer simbaId={ticket.simba_id} />
 
 			<div className="ticket-content">
 				<div className="ticket-section">

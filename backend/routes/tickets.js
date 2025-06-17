@@ -7,6 +7,7 @@ const {
 	updateTicket,
 	deleteTicket,
 	submitArtForm,
+	getTicketTrace,
 } = require('../controllers/ticketController');
 
 /**
@@ -347,5 +348,91 @@ router.route('/:id').get(getTicket).put(updateTicket).delete(deleteTicket);
  *               $ref: '#/components/schemas/Error'
  */
 router.route('/:id/art').post(submitArtForm);
+
+/**
+ * @swagger
+ * /api/tickets/{id}/trace:
+ *   get:
+ *     summary: Get trace data for a ticket
+ *     description: Retrieve real-time trace data for Bedrock agent processing
+ *     tags: [Tickets]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: SIMBA ID of the ticket
+ *         example: SIMBA-0001
+ *     responses:
+ *       200:
+ *         description: Trace data retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     sessionId:
+ *                       type: string
+ *                       example: "SIMBA-0001"
+ *                     currentStage:
+ *                       type: string
+ *                       example: "processing"
+ *                     stages:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             example: "submission"
+ *                           name:
+ *                             type: string
+ *                             example: "Ticket Submitted"
+ *                           status:
+ *                             type: string
+ *                             enum: [pending, in_progress, completed, failed]
+ *                             example: "completed"
+ *                           timestamp:
+ *                             type: string
+ *                             format: date-time
+ *                             example: "2023-01-01T00:00:00.000Z"
+ *                           message:
+ *                             type: string
+ *                             example: "Ticket successfully submitted"
+ *                     logs:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           timestamp:
+ *                             type: string
+ *                             format: date-time
+ *                           stage:
+ *                             type: string
+ *                           status:
+ *                             type: string
+ *                           message:
+ *                             type: string
+ *       404:
+ *         description: Ticket not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.route('/:id/trace').get(getTicketTrace);
 
 module.exports = router;

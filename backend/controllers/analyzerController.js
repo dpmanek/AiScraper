@@ -151,8 +151,7 @@ async function processWithLLM(text, provider = 'openai', customPrompt = null) {
 		text.length > 15000 ? text.substring(0, 15000) + '...' : text;
 
 	// Default prompt if none provided
-	const defaultPrompt =
-		'You are a helpful assistant that summarizes web content and highlights key information. Provide your response in two sections: 1) Summary and 2) Key Information';
+	const defaultPrompt = 'Give output as JSON for data extraction for API';
 	const prompt = customPrompt || defaultPrompt;
 
 	// Use the selected provider
@@ -168,25 +167,45 @@ async function processWithLLM(text, provider = 'openai', customPrompt = null) {
 // Function to process text with Claude
 async function processWithClaude(text, customPrompt = null) {
 	try {
+		console.log(
+			'🔍 Claude function called with customPrompt:',
+			customPrompt ? 'YES' : 'NO'
+		);
+
 		// Create a message with Claude 3 Sonnet (latest version)
+		const systemPrompt =
+			customPrompt || 'Give output as JSON for data extraction for API';
+
+		const userContent = customPrompt
+			? `${customPrompt}\n\nContent to analyze: ${text}`
+			: `Give output as JSON for data extraction for API\n\nContent to analyze: ${text}`;
+
+		console.log(
+			'🔍 Using system prompt:',
+			systemPrompt.substring(0, 100) + '...'
+		);
+
 		const message = await anthropic.messages.create({
 			model: 'claude-3-7-sonnet-20250219', // Using the specific model version requested
 			max_tokens: 1000,
-			system:
-				customPrompt ||
-				'You are a helpful assistant that summarizes web content and highlights key information. Provide your response in two sections: 1) Summary and 2) Key Information',
+			system: systemPrompt,
 			messages: [
 				{
 					role: 'user',
-					content: `Summarize the following web content and highlight key information (like product details, pricing, descriptions, etc.): ${text}`,
+					content: userContent,
 				},
 			],
 			temperature: 0.5,
 		});
 
+		console.log('✅ Claude response received successfully');
 		return message.content[0].text;
 	} catch (error) {
-		console.error('Error processing with Claude:', error);
+		console.error('❌ Error processing with Claude:', error);
+		console.error(
+			'❌ Claude API Error Details:',
+			error.response?.data || error.message
+		);
 		return 'Error processing content with Claude. Please try again or switch to a different AI provider.';
 	}
 }

@@ -235,15 +235,15 @@ ticketSchema.pre('init', function () {
 	const collection = this.collection;
 	collection.dropIndex('simba_id_1', function (err) {
 		// Ignore errors if the index doesn't exist
-		console.log('Dropped simba_id_1 index if it existed');
+		// console.log('Dropped simba_id_1 index if it existed');
 	});
 	collection.dropIndex('art_id_1', function (err) {
 		// Ignore errors if the index doesn't exist
-		console.log('Dropped art_id_1 index if it existed');
+		// console.log('Dropped art_id_1 index if it existed');
 	});
 	collection.dropIndex('user_id_1', function (err) {
 		// Ignore errors if the index doesn't exist
-		console.log('Dropped user_id_1 index if it existed');
+		// console.log('Dropped user_id_1 index if it existed');
 	});
 });
 
