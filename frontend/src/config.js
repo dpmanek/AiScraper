@@ -5,6 +5,6 @@
 // const API_BASE_URL = 'https://184.72.168.62'; // Nginx HTTPS
 // const API_BASE_URL = 'https://184.72.168.62:5001'; // Direct HTTPS to Node.js
 // const API_BASE_URL = 'http://184.72.168.62:5000'; // HTTP fallback
-const API_BASE_URL = 'http://localhost:5000'; // For local development
+const API_BASE_URL = 'http://localhost:5005'; // For local development
 
 export { API_BASE_URL };
